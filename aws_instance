@@ -1,0 +1,39 @@
+---
+
+- hosts: localhost
+  gather_facts: False
+  tasks:
+    - name: creating key pair
+      ec2_key:
+        name: sample
+        region: us-east-1
+      register: out
+
+      #name: printing output
+      #debug:
+        #var: out
+
+    - name: copying private key
+      copy:
+        content: "{{out.key.private_key}}"
+        dest: ./sample.pem
+      when: out.changed
+
+    - name: Provision an EC2 instance with a public IP address
+      amazon.aws.ec2_instance:
+        name: sample
+        key_name: sample
+        instance_type: t2.micro
+        region: us-east-1
+        security_group: default
+        image_id: ami-0e1bed4f06a3b463d
+        tags:
+          Environment: Testing
+        wait: yes
+        wait_timeout: 300
+        exact_count: 1
+      register: result
+
+    - name: Debug ec2_info
+      ansible.builtin.debug:
+        var: ec2_info
