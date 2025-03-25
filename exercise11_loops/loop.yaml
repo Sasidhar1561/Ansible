@@ -1,0 +1,43 @@
+---
+
+- name: Installing NTP service in the server
+  hosts: all
+  tasks: 
+
+    - name: installing NTP service in ubuntu machine
+      apt:
+        name: "{{item}}"
+        state: present
+        update_cache: yes
+      when: ansible_distribution == "Ubuntu"
+      loop: 
+        - wget
+        - zip
+        - ntp
+        - unzip
+
+    - name: installing NTP service in centos machine
+      yum:
+        name: "{{item}}"
+        state: present
+      when: ansible_distribution == "CentOS"
+      loop: 
+        - wget
+        - zip
+        - chrony
+        - unzip
+
+    - name: starting NTP service in centos machine
+      service:
+        name: chronyd
+        state: started
+        enabled: yes
+      when: ansible_distribution == "CentOS"
+
+    - name: starting NTP service in ubuntu machine
+      service:
+        name: ntp
+        state: started
+        enabled: yes
+      when: ansible_distribution == "Ubuntu"
+

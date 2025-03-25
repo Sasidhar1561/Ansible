@@ -1,0 +1,37 @@
+---
+
+- name: installing db in target machine
+  hosts: dbservers
+  tasks:
+
+    - name: installing mariadb-server in target machine(db01)
+      ansible.builtin.yum:
+        name: mariadb-server
+        state: present
+
+    - name: installing dependencies on target machine(db01)
+      ansible.builtin.yum:
+        name: python3-PyMySQL
+        state: present    
+
+    - name: starting db service
+      ansible.builtin.service:
+        name: mariadb
+        state: started
+        enabled: yes
+
+    - name: Create a new database with name 'accounts'
+      mysql_db:
+        name: accounts
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock
+
+    - name: Create database user with name 'admin' and password 'xxxx' with all database privileges
+      community.mysql.mysql_user:
+        name: admin
+        password: 1803
+        priv: '*.*:ALL'
+        state: present
+        login_unix_socket: /var/lib/mysql/mysql.sock 
+    
+       

@@ -1,0 +1,22 @@
+---
+
+- name: creating user
+  hosts: all
+    #vars:
+    #usrnm: centos
+    #cmt: "just a simple comt"
+  tasks:
+
+    - name: creating user in target machine
+      ansible.builtin.user:
+        name: "{{usrnm}}"
+        comment: "{{cmt}}"
+
+      register: varout
+
+    - name: printing output 
+      debug:
+        var: varout.comment
+      
+    - debug:
+        var: varout.name
